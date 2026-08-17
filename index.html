@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d1b">
+<title>My Personal Hub</title>
+<style>
+:root{
+  --bg:#070b18;--panel:#11182a;--panel2:#151d31;--text:#f5f7ff;--muted:#9aa5bd;
+  --line:rgba(255,255,255,.10);--accent:#7c4dff;--accent2:#4f8cff;
+}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 20% 0%,#20154a 0,transparent 35%),radial-gradient(circle at 90% 25%,#102d4b 0,transparent 32%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;border:0} .app{max-width:900px;margin:auto;padding:22px 18px 115px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+h1{font-size:34px;margin:0 0 5px;letter-spacing:-1px}.sub{color:var(--muted);font-size:16px}
+.iconbtn{width:50px;height:50px;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:17px;font-size:23px}
+.search{width:100%;padding:15px 18px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:white;outline:none;font-size:16px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{position:relative;min-height:205px;padding:18px;border:1px solid var(--line);border-radius:27px;background:linear-gradient(145deg,rgba(24,33,54,.94),rgba(11,16,30,.94));overflow:hidden;box-shadow:0 14px 35px rgba(0,0,0,.18)}
+.card:after{content:"";position:absolute;width:100px;height:100px;border-radius:50%;right:-35px;top:-35px;background:var(--glow,#7c4dff);filter:blur(45px);opacity:.24}
+.emoji{width:62px;height:62px;border-radius:20px;display:grid;place-items:center;font-size:34px;background:rgba(255,255,255,.07);border:1px solid var(--line);position:relative;z-index:1}
+.card h2{font-size:25px;margin:18px 0 4px;position:relative;z-index:1}.desc{color:var(--card,#9aa5bd);font-size:15px;line-height:1.3;position:relative;z-index:1}
+.count{display:inline-block;margin-top:14px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.07);color:#c7cede;font-size:13px;position:relative;z-index:1}
+.open{position:absolute;right:16px;top:18px;background:none;font-size:25px;color:#c8d0df;z-index:2}
+.bottom{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:min(94%,860px);height:82px;border:1px solid var(--line);border-radius:30px;background:rgba(18,25,43,.92);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:space-around;box-shadow:0 20px 55px rgba(0,0,0,.35);z-index:10}
+.nav{background:none;color:#8e99b0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px}.nav.active{color:#a98bff}.plus{width:62px;height:62px;border-radius:22px;background:linear-gradient(145deg,#8a4dff,#5430e8);font-size:34px;box-shadow:0 10px 30px #4b28c755}
+.overlay{position:fixed;inset:0;background:rgba(3,6,14,.65);backdrop-filter:blur(10px);z-index:20;display:none;align-items:flex-end}.overlay.show{display:flex}
+.sheet{width:100%;max-height:88vh;overflow:auto;background:#11182a;border:1px solid var(--line);border-radius:30px 30px 0 0;padding:24px 18px 34px;box-shadow:0 -20px 60px rgba(0,0,0,.4)}
+.sheethead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.sheet h2{font-size:28px;margin:0}.close{width:48px;height:48px;border-radius:16px;background:#202a40;font-size:25px}
+.item{display:flex;align-items:center;gap:14px;width:100%;padding:16px;margin:10px 0;border-radius:20px;background:#192236;border:1px solid var(--line);text-align:left}.item .ico{font-size:28px;width:38px;text-align:center}.item .name{font-size:18px;flex:1}.item .star{background:none;color:#7f8aa2;font-size:22px}.item.fav .star{color:#ffd54a}
+.empty{text-align:center;color:var(--muted);padding:35px 10px}.sectiontitle{font-size:14px;color:#7f8aa2;text-transform:uppercase;letter-spacing:1.5px;margin:25px 4px 10px}
+@media(max-width:520px){.grid{gap:12px}.card{min-height:190px;padding:16px}.card h2{font-size:22px}.emoji{width:56px;height:56px;font-size:30px}h1{font-size:31px}}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><h1>Welcome 👋</h1><div class="sub">Everything you need, in one place.</div></div><button class="iconbtn" onclick="focusSearch()">⌕</button></header>
+<input id="search" class="search" placeholder="Search apps and categories…" oninput="render()">
+<div id="grid" class="grid"></div>
+</div>
+
+<nav class="bottom">
+<button class="nav active" onclick="home()">⌂<span>Home</span></button>
+<button class="nav" onclick="showList('Favorites','★')">☆<span>Favorites</span></button>
+<button class="plus" onclick="showList('Quick Add','＋')">+</button>
+<button class="nav" onclick="showList('Recent','◷')">◷<span>Recent</span></button>
+<button class="nav" onclick="showSettings()">⚙<span>Settings</span></button>
+</nav>
+
+<div id="overlay" class="overlay" onclick="closeIfBg(event)">
+<div class="sheet"><div class="sheethead"><h2 id="sheetTitle"></h2><button class="close" onclick="closeSheet()">×</button></div><div id="sheetBody"></div></div>
+</div>
+
+<script>
+const data=[
+["AI","Artificial Intelligence","🤖","#9b5cff",[["ChatGPT","🤖","https://chatgpt.com/"],["Gemini","✨","https://gemini.google.com/"],["Claude","🧠","https://claude.ai/"],["Perplexity","🔎","https://www.perplexity.ai/"]]],
+["Work","Work & Productivity","💼","#4f8cff",[["Google Drive","📁","https://drive.google.com/"],["Notion","📝","https://www.notion.so/"],["Trello","📌","https://trello.com/"],["Indeed","💼","https://www.indeed.com/"]]],
+["Learning","Learning & Education","🎓","#35d17c",[["YouTube","▶️","https://www.youtube.com/"],["Coursera","🎓","https://www.coursera.org/"],["Khan Academy","📚","https://www.khanacademy.org/"]]],
+["Finance","Money & Finance","💰","#f0a51a",[["TradingView","📈","https://www.tradingview.com/"],["Investing","💹","https://www.investing.com/"]]],
+["Social","Social & Communication","💬","#e24c9a",[["WhatsApp","💬","https://web.whatsapp.com/"],["Telegram","✈️","https://web.telegram.org/"],["LinkedIn","in","https://www.linkedin.com/"]]],
+["Creative","Design & Creativity","🎨","#a45cff",[["Canva","🎨","https://www.canva.com/"],["Adobe Express","✨","https://www.adobe.com/express/"]]],
+["Documents","Documents & Files","📄","#46b7d8",[["Google Docs","📄","https://docs.google.com/"],["iLovePDF","📕","https://www.ilovepdf.com/"]]],
+["Entertainment","Movies & Media","🎬","#e75b65",[["YouTube","▶️","https://www.youtube.com/"],["Netflix","🎬","https://www.netflix.com/"]]],
+["Games","Games","🎮","#6f7cff",[["Steam","🎮","https://store.steampowered.com/"],["CrazyGames","🕹️","https://www.crazygames.com/"]]],
+["Tools","Tools & Utilities","⚙️","#36c6c0",[["Google Translate","🌐","https://translate.google.com/"],["Speedtest","⚡","https://www.speedtest.net/"]]],
+["Travel","Travel & Maps","🌍","#36a8ff",[["Google Maps","📍","https://maps.google.com/"],["Booking","🏨","https://www.booking.com/"]]],
+["Shopping","Shopping","🛒","#ff6b7d",[["Amazon","🛒","https://www.amazon.com/"],["eBay","🛍️","https://www.ebay.com/"]]],
+["Health","Health & Wellness","🧠","#54d39a",[["Google Fit","❤️","https://fit.google.com/"],["Headspace","🧘","https://www.headspace.com/"]]]
+];
+let fav=JSON.parse(localStorage.getItem("hubFav")||"[]"), recent=JSON.parse(localStorage.getItem("hubRecent")||"[]");
+function save(){localStorage.setItem("hubFav",JSON.stringify(fav));localStorage.setItem("hubRecent",JSON.stringify(recent))}
+function render(){
+ const q=document.getElementById("search").value.toLowerCase().trim();
+ document.getElementById("grid").innerHTML=data.filter(c=>!q||c[0].toLowerCase().includes(q)||c[1].toLowerCase().includes(q)||c[4].some(a=>a[0].toLowerCase().includes(q))).map((c,i)=>`<div class="card" style="--glow:${c[3]}"><button class="open" onclick="showCat(${i})">›</button><div class="emoji">${c[2]}</div><h2>${c[0]}</h2><div class="desc" style="color:${c[3]}">${c[1]}</div><span class="count">${c[4].length} apps</span></div>`).join("");
+}
+function showCat(i){const c=data[i];document.getElementById("sheetTitle").textContent=c[2]+"  "+c[0]+" — "+c[1];document.getElementById("sheetBody").innerHTML=c[4].map((a)=>item(a)).join("");document.getElementById("overlay").classList.add("show")}
+function item(a){let id=a[0].replace(/\W/g,"");let is=fav.includes(id);return `<div class="item ${is?"fav":""}" onclick="openApp('${a[0].replace(/'/g,"\\'")}','${a[2]}')"><span class="ico">${a[1]}</span><span class="name">${a[0]}</span><button class="star" onclick="event.stopPropagation();toggleFav('${id}')">${is?"★":"☆"}</button><span>↗</span></div>`}
+function toggleFav(id){fav=fav.includes(id)?fav.filter(x=>x!==id):[...fav,id];save();let title=document.getElementById("sheetTitle").textContent;let idx=data.findIndex(c=>title.includes(c[0]));if(idx>=0)showCat(idx)}
+function openApp(name,url){recent=[name,...recent.filter(x=>x!==name)].slice(0,12);save();window.open(url,"_blank")}
+function showList(title,icon){document.getElementById("sheetTitle").textContent=icon+"  "+title;let apps=[];data.forEach(c=>c[4].forEach(a=>{let id=a[0].replace(/\W/g,"");if((title==="Favorites"&&fav.includes(id))||(title==="Recent"&&recent.includes(a[0])))apps.push(a)}));document.getElementById("sheetBody").innerHTML=apps.length?apps.map(item).join(""):`<div class="empty">Nothing here yet.<br>Open an app or tap ☆ to add favorites.</div>`;document.getElementById("overlay").classList.add("show")}
+function showSettings(){document.getElementById("sheetTitle").textContent="⚙  Settings";document.getElementById("sheetBody").innerHTML='<div class="sectiontitle">Storage</div><button class="item" onclick="fav=[];recent=[];save();showSettings()">🧹 <span class="name">Clear favorites & recent</span> ›</button><div class="sectiontitle">About</div><div class="empty">My Personal Hub<br><small>Private, lightweight and mobile-first.</small></div>';document.getElementById("overlay").classList.add("show")}
+function closeSheet(){document.getElementById("overlay").classList.remove("show")}
+function closeIfBg(e){if(e.target.id==="overlay")closeSheet()}
+function focusSearch(){document.getElementById("search").focus();window.scrollTo({top:0,behavior:"smooth"})}
+function home(){closeSheet();document.getElementById("search").value="";render()}
+render();
+</script>
+</body>
+</html>
