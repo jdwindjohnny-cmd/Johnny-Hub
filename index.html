@@ -33,7 +33,7 @@ h1{font-size:34px;margin:0 0 5px;letter-spacing:-1px}.sub{color:var(--muted);fon
 @media(max-width:520px){.grid{gap:12px}.card{min-height:190px;padding:16px}.card h2{font-size:22px}.emoji{width:56px;height:56px;font-size:30px}h1{font-size:31px}}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
-</head>
+<link rel="manifest" href="manifest.webmanifest"></head>
 <body>
 <div class="app">
 <header><div><h1>Welcome 👋</h1><div class="sub">Everything you need, in one place.</div></div><button class="iconbtn" onclick="focusSearch()">⌕</button></header>
@@ -87,5 +87,5 @@ function focusSearch(){document.getElementById("search").focus();window.scrollTo
 function home(){closeSheet();document.getElementById("search").value="";render()}
 render();
 </script>
-</body>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js")}</script></body>
 </html>
